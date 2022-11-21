@@ -1,0 +1,15 @@
+C:\Users\mkamiss1\Documents\Assignment3-Lottery\bin\Debug\net6.0\Assignment3-Lottery.exe
+C:\Users\mkamiss1\Documents\Assignment3-Lottery\bin\Debug\net6.0\Assignment3-Lottery.deps.json
+C:\Users\mkamiss1\Documents\Assignment3-Lottery\bin\Debug\net6.0\Assignment3-Lottery.runtimeconfig.json
+C:\Users\mkamiss1\Documents\Assignment3-Lottery\bin\Debug\net6.0\Assignment3-Lottery.dll
+C:\Users\mkamiss1\Documents\Assignment3-Lottery\bin\Debug\net6.0\Assignment3-Lottery.pdb
+C:\Users\mkamiss1\Documents\Assignment3-Lottery\obj\Debug\net6.0\Assignment3-Lottery.csproj.AssemblyReference.cache
+C:\Users\mkamiss1\Documents\Assignment3-Lottery\obj\Debug\net6.0\Assignment3-Lottery.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\mkamiss1\Documents\Assignment3-Lottery\obj\Debug\net6.0\Assignment3-Lottery.AssemblyInfoInputs.cache
+C:\Users\mkamiss1\Documents\Assignment3-Lottery\obj\Debug\net6.0\Assignment3-Lottery.AssemblyInfo.cs
+C:\Users\mkamiss1\Documents\Assignment3-Lottery\obj\Debug\net6.0\Assignment3-Lottery.csproj.CoreCompileInputs.cache
+C:\Users\mkamiss1\Documents\Assignment3-Lottery\obj\Debug\net6.0\Assignment3-Lottery.dll
+C:\Users\mkamiss1\Documents\Assignment3-Lottery\obj\Debug\net6.0\refint\Assignment3-Lottery.dll
+C:\Users\mkamiss1\Documents\Assignment3-Lottery\obj\Debug\net6.0\Assignment3-Lottery.pdb
+C:\Users\mkamiss1\Documents\Assignment3-Lottery\obj\Debug\net6.0\Assignment3-Lottery.genruntimeconfig.cache
+C:\Users\mkamiss1\Documents\Assignment3-Lottery\obj\Debug\net6.0\ref\Assignment3-Lottery.dll
