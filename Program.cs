@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+using System.Drawing;
+using System.Text.RegularExpressions;
 
 namespace Assignment3_Lottery
 {
@@ -14,7 +15,9 @@ namespace Assignment3_Lottery
         {
             //declare variables
             bool continueDisplay = true;
-            int menuOption;
+            int menuOption,
+                ExtraMax,
+                Extra649;
             int[] lottoMaxNumbers = new int[7],
                 lotto649Numbers = new int[6],
                 lottoExtraNumbers = new int[7];
@@ -41,11 +44,13 @@ namespace Assignment3_Lottery
                         break;
 
                     case 1:
-                        lottoMaxNumbers = ChangeLotteyNumbers(lottoMaxNumbers, LottoMAXSize, "Lotto MAX");
+                        lottoMaxNumbers = ChangeLotteyNumbers(lottoMaxNumbers, LottoMAXSize, LottoMAXMax, "Lotto MAX");
+                        ExtraMax = RandomBonusNumber(lottoMaxNumbers, LottoMAXMax, LottoMAXSize);
                         break;
 
                     case 2:
-                        lotto649Numbers = ChangeLotteyNumbers(lotto649Numbers, Lotto649Size, "Lotto 6/49");
+                        lotto649Numbers = ChangeLotteyNumbers(lotto649Numbers, Lotto649Size, Lotto649Max, "Lotto 6/49");
+                        Extra649 = RandomBonusNumber(lotto649Numbers, Lotto649Max, Lotto649Size);
                         break;
 
                     case 3:
@@ -84,48 +89,82 @@ namespace Assignment3_Lottery
             Console.WriteLine("|------------------------------------------------|");
         }//end of MenuDisplay
 
-        //-----------------------LOTTO MAX-------------------------
+        //-----------------------LOTTO MAX--------------------------
 
-        static int[] ChangeLotteyNumbers(int[] lotteryNumbers, int max, string lotteryName)
+        static void PlayLottoMax(int[] playerNumbers, int extraNumber, int max, int size)
         {
-            char option;
-            //Display current numbers
-            Console.WriteLine($"The current {lotteryName} numbers are: ");
-            for (int index = 0; index < max; index++)
-            {
-                Console.Write($"{lotteryNumbers[index]}");
-                if (index != (max - 1))
-                {
-                    Console.Write(", ");
-                }
-            }
-            //prompt to generate or manually input numbers
-            option = GetSafeOption("\nWould you like to generate or enter the winning numbers (g/e): ");
+            //declare variables 
+            int[] winningNumbers = new int[size];
+            int matches,
+                bonus;
 
-            //prompt to generate or manually input numbers
-            if (option == 'g')
+            //generate winning numbers
+            winningNumbers = GenerateNumberSet(winningNumbers, max, size);
+            bonus = RandomBonusNumber(winningNumbers, max, size);
+
+            //find matches between winning and player numbers
+            matches = FindMatches(playerNumbers, winningNumbers, bonus, size);
+
+            //find bonus match if all non-bonus numbers did not match
+            if (matches != size)
             {
-                GenerateNumberSet(lotteryNumbers, max, max);
+                BonusMatch(winningNumbers, bonus, size);
             }
             else
             {
+
+            }
+        }
+        
+        //-----------------------LOTTO 6/49-------------------------
+        static int FindMatches(int[] playerNumbers, int[] winningNumbers, int bonus, int size)
+        {
+            int matches = 0,
+                cycle = 0;
+            bool scanComplete = false;
+
+            do
+            {
+                for (int index = 0; index < size; index++)
+                {
+                    if (winningNumbers[index] == playerNumbers[cycle])
+                    {
+                        matches++;
+                        index = size;
+                    }
+                }
+
+                //move to next player number to compare to
+                cycle++;
                 
+                //if all numbers have been compared, exit do while loop
+                if(cycle == size)
+                {
+                    scanComplete = true;
+                }
+                
+            } while (scanComplete == false);
+
+            return matches;
+        }//end of FindMatches
+
+        static bool BonusMatch(int[] winningNumbers, int bonus, int size)
+        {
+            bool match = false;
+
+            for (int index = 0; index < size; index++)
+            {
+                if (winningNumbers[index] == bonus)
+                {
+                    match = true;
+                    index = size;
+                }
             }
 
-            //display new numbers
-
-            return lotteryNumbers;
+            return match;
         }
-
-        //-----------------------LOTTO 6/49-------------------------
-
         //-----------------------LOTTO EXTRA-------------------------
 
-        static int[] ChooseNumbers(int max)
-        {
-            int[] lotteryNumbers = new int[max];
-
-        }
         static int[] ChangeExtraNumber(int[] lottoExtraNumbers)
         {
             Console.Write("\nThe current Lotto EXTRA number is: ");
@@ -144,7 +183,8 @@ namespace Assignment3_Lottery
 
             Console.WriteLine("\n");
             return lottoExtraNumbers;
-        }
+        }//end of ChangeExtraNumber
+
         static int[] GenerateExtraNumber()
         {
             Random random = new Random();
@@ -161,6 +201,83 @@ namespace Assignment3_Lottery
 
         //-----------------------Shared Methods-------------------------
 
+        static int RandomBonusNumber(int[] lotteryNumbers, int max, int size)
+        {
+            Random random = new Random();
+            int number;
+            bool unique = false;
+
+            do
+            {
+                number = random.Next(1, max);
+                if (SearchArray(lotteryNumbers, size, number) == -1)
+                {
+                    unique = true;
+                }
+            } while (unique != false);
+
+            return number;  
+        }//end of RandomExtraNumber
+
+        static int[] ChooseNumbers(int size, int max)
+        {
+            int[] lotteryNumbers = new int[size];
+
+            for (int index = 0; index < size; index++)
+            {
+                lotteryNumbers[index] = GetUniqueInt($"Enter number {index+1}: ", lotteryNumbers, size, index, max);
+            }
+
+            return lotteryNumbers;
+        }//ChooseNumbers
+        static int[] ChangeLotteyNumbers(int[] lotteryNumbers, int size, int max, string lotteryName)
+        {
+            char option;
+            //Display current numbers
+            Console.WriteLine($"The current {lotteryName} numbers are: ");
+            for (int index = 0; index < size; index++)
+            {
+                Console.Write($"{lotteryNumbers[index]}");
+                if (index != (size - 1))
+                {
+                    Console.Write(", ");
+                }
+            }
+            //prompt to generate or manually input numbers
+            option = GetSafeOption("\nWould you like to generate or enter the winning numbers (g/e): ");
+
+            //prompt to generate or manually input numbers
+            if (option == 'g')
+            {
+                GenerateNumberSet(lotteryNumbers, max, size);
+            }
+            else
+            {
+                lotteryNumbers = ChooseNumbers(size, max);
+            }
+
+            //Display the array
+
+            DisplayArray(lotteryNumbers, lotteryName, size);
+
+
+            return lotteryNumbers;
+        }//end of ChangeLotteryNumbers
+
+        static void DisplayArray(int[] lotteryNumbers, string lotteryName, int size)
+        {
+            Console.Write($"\nThe new {lotteryName} numbers are: ");
+            for (int index = 0; index < size; index++)
+            {
+                Console.Write($"{lotteryNumbers[index]}");
+                if(index != (size - 1))
+                {
+                    Console.Write(", ");
+                }
+            }
+            Console.WriteLine('\n');
+        }//end of DisplayArray
+
         static int GetSafeInt(string prompt, int max)
         {
             bool isValid = false;
@@ -173,7 +290,7 @@ namespace Assignment3_Lottery
                     number = int.Parse(Console.ReadLine());
                     if(number > max)
                     {
-                        prompt = $"Please enter a number no larger than {max}";
+                        prompt = $"Please enter a number no larger than {max}: ";
                     }
                     else
                     {
@@ -187,7 +304,7 @@ namespace Assignment3_Lottery
                 }
             } while (!isValid);
             return number;
-        }//GetSafeInt
+        }//end of GetSafeInt
 
         static char GetSafeOption(string prompt)
         {
@@ -199,7 +316,7 @@ namespace Assignment3_Lottery
                 {
                     Console.Write(prompt);
                     option = char.Parse(Console.ReadLine().ToLower());
-                    if (option != 'g' || option != 'e')
+                    if (option != 'g' && option != 'e')
                     {
                         Console.WriteLine("Enter a valid selection (g/e)");
                     }
@@ -216,16 +333,18 @@ namespace Assignment3_Lottery
             } while (!isValid);
 
             return option;
-        }//GetSafeOption
+        }//end of GetSafeOption
 
         static int GetUniqueInt(string prompt, int[] lotteryNumbers, int size, int index, int max)
         {
             int location,
                 number;
-            bool addComplete = false;
+            bool addComplete;
 
             do
             {
+                addComplete = false;
+
                 number = GetSafeInt(prompt, max);
                 //only add number to array if number does not already exist. 
                 location = SearchArray(lotteryNumbers, size, number);
@@ -236,24 +355,28 @@ namespace Assignment3_Lottery
                 }
                 else
                 {
-                    prompt = "Please enter a unique number";
+                    prompt = "Please enter a unique number: ";
                 }
             }while(addComplete == false);
             
 
             return number;
 
-        }//GetSafeInt
+        }//end of GetSafeInt
 
         static int SearchArray(int[] lotteryNumbers, int size, int numberSearch)
         {
 
-            int location = -1; //the value of -1 indicates the searchName was not found
+            int location = -1;
             for (int index = 0; index < size; index++)
             {
-                if (lotteryNumbers[index] == numberSearch)
+                if (lotteryNumbers[index] != numberSearch)
                 {
                     location = index;
+                }
+                else
+                {
+                    location = -1;
                     index = size;
                 }
             }
@@ -261,20 +384,7 @@ namespace Assignment3_Lottery
             return location;
         }//end of SearchArray
 
-        static int[] LoadArrayManual(int[] lotteryNumbers, int size, int max)
-        {
-            int uniqueNumber;
-
-            for (int index = 0; index < size; index++)
-            {
-                uniqueNumber = GetUniqueInt($"Enter number #{index + 1}", lotteryNumbers, size, index, max);
-                lotteryNumbers[index] = uniqueNumber;
-            }
-
-            return lotteryNumbers;
-        }//end of LoadArrayManual
-
-        static int[] GenerateNumberSet(int[] lotteryNumbers, int size, int max)
+        static int[] GenerateNumberSet(int[] lotteryNumbers, int max, int size)
         {
             //random number generator
             Random random = new Random();
@@ -290,13 +400,13 @@ namespace Assignment3_Lottery
                     randomNum = random.Next(1, max);
                     if (SearchArray(lotteryNumbers, size, randomNum) > -1)
                     {
-                        uniqueNumber = false;
-                    }
-                    else
-                    {
                         //add random number to array if unique, continue for loop
                         uniqueNumber = true;
                         lotteryNumbers[number] = randomNum;
+                    }
+                    else
+                    {
+                        uniqueNumber = false;
                     }
                 } while (uniqueNumber == false) ;
             }
